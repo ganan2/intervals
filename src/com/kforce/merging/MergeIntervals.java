@@ -11,6 +11,14 @@ class MergeIntervals {
 
 	private static final Logger log = Logger.getLogger(MergeIntervals.class.getName());
 
+	/**
+	 * This method removes null and negative elements from the list, uses list of Interval, returns list of Interval, throws NullPointerException and NumberFormatException.  
+	 * 
+	 * @param list
+	 * @return
+	 * @throws NullPointerException
+	 * @throws NumberFormatException
+	 */
 	public List<Interval> removeNullAndNegativeIntervals(List<Interval> list) throws NullPointerException, NumberFormatException {
 		try {
 			if(list.contains(null)) {
