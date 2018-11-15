@@ -16,317 +16,446 @@ import org.junit.runner.notification.Failure;
 
 public class MergeIntervalsTests {
 
-	private static final Logger log = Logger.getLogger(MergeIntervals.class.getName());
+ private static final Logger log = Logger.getLogger(MergeIntervals.class.getName());
 
-	List<Interval> list = null;
+ List<Interval> list = null;
 
-	List<Interval> resultList = null;
+ List<Interval> resultList = null;
 
-	MergeIntervals mergeIntervals = null;
+ MergeIntervals mergeIntervals = null;
 
-	@Before
-	public void setup() {
-		list = new ArrayList<>();
-		mergeIntervals = new MergeIntervals();
-		resultList = new ArrayList<>();
-	}
+ @Before
+ public void setup() {
+  list = new ArrayList<>();
+  mergeIntervals = new MergeIntervals();
+  resultList = new ArrayList<>();
+ }
 
-	@After
-	public void tearDown() {
-		resultList = null;
-		mergeIntervals = null;
-		list = null;
-	}
-	
-	@Rule
-	public ExpectedException expectedException = ExpectedException.none();
+ @After
+ public void tearDown() {
+  resultList = null;
+  mergeIntervals = null;
+  list = null;
+ }
 
-	public void reset() {
-		tearDown();
-		setup();
-	}
+ @Rule
+ public ExpectedException expectedException = ExpectedException.none();
 
-	/**
-	 * This method is used to test the method for forward range interval list for point interval, accepts nothing and returns nothing.
-	 */
-	@Test
-	public void getForwardRangedIntervalListTestForPointIntervalAcceptsList() {
-		Interval interval = new Interval(0, 0);
-		list.add(interval);
+ public void reset() {
+  tearDown();
+  setup();
+ }
 
-		mergeIntervals = new MergeIntervals();
-		resultList = mergeIntervals.getForwardRangedIntervalList(list);
+ /**
+  * This method is used to test the method for forward range interval list for
+  * point interval, accepts nothing and returns nothing.
+  */
+ @Test
+ public void getForwardRangedIntervalListTestForPointIntervalAcceptsList() {
+  Interval interval = new Interval(0, 0);
+  list.add(interval);
 
-		for (Interval localInterval : resultList) {
-			Assert.assertEquals(0, localInterval.getLowerBound());
-			Assert.assertEquals(0, localInterval.getUpperBound());
-		}
+  mergeIntervals = new MergeIntervals();
+  resultList = mergeIntervals.getForwardRangedIntervalList(list);
 
-		reset();
-	}
+  for (Interval localInterval : resultList) {
+   Assert.assertEquals(0, localInterval.getLowerBound());
+   Assert.assertEquals(0, localInterval.getUpperBound());
+  }
 
-	/**
-	 * This method is used to test the method for forward range interval list for single positive interval, accepts nothing and returns nothing.
-	 */
-	@Test
-	public void getForwardRangedIntervalListTestForSinglePositiveInterval() {
-		list.add(new Interval(500, 1000));
+  reset();
+ }
 
-		mergeIntervals = new MergeIntervals();
-		resultList = mergeIntervals.getForwardRangedIntervalList(list);
+ /**
+  * This method is used to test the method for forward range interval list for
+  * single positive interval, accepts nothing and returns nothing.
+  */
+ @Test
+ public void getForwardRangedIntervalListTestForSinglePositiveInterval() {
+  list.add(new Interval(500, 1000));
 
-		for (Interval localInterval : resultList) {
-			Assert.assertEquals(500, localInterval.getLowerBound());
-			Assert.assertEquals(1000, localInterval.getUpperBound());
-		}
+  mergeIntervals = new MergeIntervals();
+  resultList = mergeIntervals.getForwardRangedIntervalList(list);
 
-		reset();
-	}
+  for (Interval localInterval : resultList) {
+   Assert.assertEquals(500, localInterval.getLowerBound());
+   Assert.assertEquals(1000, localInterval.getUpperBound());
+  }
 
-	/**
-	 * This method is used to test the method for forward range interval list for negative interval, accepts nothing, returns nothing but throws NumberFormatException.
-	 */
-	@Test
-	public void getForwardRangedIntervalListTestForSingleNegativeIntervalThrowsNumberFormatException() {
-		list.add(new Interval(-500, -1000));
+  reset();
+ }
 
-		try {
-			resultList = mergeIntervals.getForwardRangedIntervalList(list);
-		} catch (Exception e) {
-			Assert.assertEquals(e.getClass(), NumberFormatException.class);
-			Assert.assertEquals("Zipcodes must be non-negative.", e.getMessage());
-			log.info(e.toString());
-		}
+ /**
+  * This method is used to test the method for forward range interval list for
+  * negative interval, accepts nothing, returns nothing but throws
+  * NumberFormatException.
+  */
+ @Test
+ public void getForwardRangedIntervalListTestForSingleNegativeIntervalThrowsNumberFormatException() {
+  list.add(new Interval(-500, -1000));
 
-		reset();
-	}
+  try {
+   resultList = mergeIntervals.getForwardRangedIntervalList(list);
+  } catch (Exception e) {
+   Assert.assertEquals(e.getClass(), NumberFormatException.class);
+   Assert.assertEquals("Zipcodes must be non-negative.", e.getMessage());
+   log.info(e.toString());
+  }
 
-	/**
-	 * This method is used to test the method for sorted intervals list for positive intervals, accepts nothing and returns nothing.
-	 */
-	@Test
-	public void getSortedIntervalsTestForPositiveIntervals() {
+  reset();
+ }
 
-		list.add(new Interval(500, 1000));
-		list.add(new Interval(750, 1000));
-		list.add(new Interval(250, 800));
+ /**
+  * This method is used to test the method for sorted intervals list for positive
+  * intervals, accepts nothing and returns nothing.
+  */
+ @Test
+ public void getSortedIntervalsTestForPositiveIntervals() {
 
-		try {
-			resultList = mergeIntervals.getSortedIntervals(list);
-		} catch (Exception e) {
-			log.info(e.toString());
-		}
-		log.info(resultList.toString());
+  list.add(new Interval(500, 1000));
+  list.add(new Interval(750, 1000));
+  list.add(new Interval(250, 800));
 
-		for (int i = 0; i < list.size(); i++) {
-			if (i == 0) {
-				Assert.assertEquals(250, list.get(i).getLowerBound());
-				Assert.assertEquals(800, list.get(i).getUpperBound());
-			} else if (i == 1) {
-				Assert.assertEquals(500, list.get(i).getLowerBound());
-				Assert.assertEquals(1000, list.get(i).getUpperBound());
-			} else if (i == 2) {
-				Assert.assertEquals(750, list.get(i).getLowerBound());
-				Assert.assertEquals(1000, list.get(i).getUpperBound());
-			}
-		}
+  try {
+   resultList = mergeIntervals.getSortedIntervals(list);
+  } catch (Exception e) {
+   log.info(e.toString());
+  }
+  log.info(resultList.toString());
 
-		reset();
-	}
-	
-	/**
-	 * This method is used to test the method for sorted intervals list for negative intervals, accepts nothing, returns nothing but throws NumberFormatException.
-	 */
-	@Test
-	public void getSortedIntervalsTestForNegativeIntervalThrowsNumberFormatException() {
+  for (int i = 0; i < list.size(); i++) {
+   if (i == 0) {
+    Assert.assertEquals(250, list.get(i).getLowerBound());
+    Assert.assertEquals(800, list.get(i).getUpperBound());
+   } else if (i == 1) {
+    Assert.assertEquals(500, list.get(i).getLowerBound());
+    Assert.assertEquals(1000, list.get(i).getUpperBound());
+   } else if (i == 2) {
+    Assert.assertEquals(750, list.get(i).getLowerBound());
+    Assert.assertEquals(1000, list.get(i).getUpperBound());
+   }
+  }
 
-		list.add(new Interval(-500, 1000));
+  reset();
+ }
 
-		try {
-			resultList = mergeIntervals.getSortedIntervals(list);
-		} catch (Exception e) {
-			Assert.assertEquals(e.getClass(), NumberFormatException.class);
-			Assert.assertEquals("Zipcodes must be non-negative.", e.getMessage());
-			log.info(e.toString());
-		}
+ /**
+  * This method is used to test the method for sorted intervals list for negative
+  * intervals, accepts nothing, returns nothing but throws NumberFormatException.
+  */
+ @Test
+ public void getSortedIntervalsTestForNegativeIntervalThrowsNumberFormatException() {
 
-		reset();
-	}
-	
-	/**
-	 * This method is used to test the method for sorted intervals list for point intervals, accepts nothing and returns nothing.
-	 */
-	@Test
-	public void getSortedIntervalsTestForPointInterval() {
+  list.add(new Interval(-500, 1000));
 
-		list.add(new Interval(0, 0));
+  try {
+   resultList = mergeIntervals.getSortedIntervals(list);
+  } catch (Exception e) {
+   Assert.assertEquals(e.getClass(), NumberFormatException.class);
+   Assert.assertEquals("Zipcodes must be non-negative.", e.getMessage());
+   log.info(e.toString());
+  }
 
-		resultList = mergeIntervals.getSortedIntervals(list);
-		
-		Assert.assertEquals(0, resultList.get(0).getLowerBound());
-		Assert.assertEquals(0, resultList.get(0).getUpperBound());
+  reset();
+ }
 
-		reset();
-	}
+ /**
+  * This method is used to test the method for sorted intervals list for point
+  * intervals, accepts nothing and returns nothing.
+  */
+ @Test
+ public void getSortedIntervalsTestForPointInterval() {
 
-	/**
-	 * This method is used to test the method for merged intervals list for positive and overlapping intervals, accepts nothing and returns nothing.
-	 */
-	@Test
-	public void getMergedIntervalsTestForOverlappingIntervals() {
-		list.add(new Interval(500, 800));
-		list.add(new Interval(500, 750));
-		
-		resultList = mergeIntervals.getMergedIntervals(list);
-		
-		Assert.assertEquals(500, list.get(0).getLowerBound());
-		Assert.assertEquals(800, list.get(0).getUpperBound());
-		
-		reset();
-	}
-	
-	/**
-	 * This method is used to test the method for merged intervals list for positive and non-overlapping intervals, accepts nothing and returns nothing.
-	 */
-	@Test
-	public void getMergedIntervalsTestForNonOverlappingIntervals() {
-		list.add(new Interval(500, 800));
-		list.add(new Interval(200, 300));
-		
-		resultList = mergeIntervals.getMergedIntervals(list);
-		
-		Assert.assertEquals(500, list.get(0).getLowerBound());
-		Assert.assertEquals(800, list.get(0).getUpperBound());
-		
-		Assert.assertEquals(200, list.get(1).getLowerBound());
-		Assert.assertEquals(300, list.get(1).getUpperBound());
-		
-		reset();
-	}
-	
-	/**
-	 * This method is used to test the method for merged intervals list for null intervals, accepts nothing and returns nothing.
-	 */
-	@Test
-	public void getMergedIntervalsTestForNullIntervals() {
-		list.add(null);
-		
-		resultList = mergeIntervals.getMergedIntervals(list);
-		
-		Assert.assertTrue(Boolean.valueOf(resultList == null));
-		
-		reset();
-	}
-	
-	/**
-	 * This method is used to test the method for merged intervals list for negative intervals, accepts nothing and returns nothing but throws NumberFormatException.
-	 */
-	@Test
-	public void getMergedIntervalsTestForNegativeIntervalsThrowsNumberFormatException() {
-		list.add(new Interval(-500, 1000));
-		
-		try {
-			resultList = mergeIntervals.getMergedIntervals(list);
-		} catch (Exception e) {
-			Assert.assertEquals(e.getClass(), NumberFormatException.class);
-			Assert.assertEquals("Zipcodes must be non-negative.", e.getMessage());
-			log.info(e.toString());
-		}
-		
-		reset();
-	}
-	
-	/**
-	 * This method is used to test the method for merged intervals list for point intervals, accepts nothing and returns nothing.
-	 */
-	@Test
-	public void getMergedIntervalsTestForPointInterval() {
-		list.add(new Interval(0, 0));
-		
-		resultList = mergeIntervals.getMergedIntervals(list);
-		
-		Assert.assertEquals(0, resultList.get(0).getLowerBound());
-		Assert.assertEquals(0, resultList.get(0).getUpperBound());
-		
-		reset();
-	}
+  list.add(new Interval(0, 0));
 
-	/**
-	 * This method is used to test the method for removing null and negative intervals from list for point intervals, accepts nothing and returns nothing.
-	 */
-	@Test
-	public void removeNullAndNegativeIntervalsTestForPointInterval() {
-		list.add(new Interval(0, 0));
-		
-		resultList = mergeIntervals.getMergedIntervals(list);
-		
-		Assert.assertEquals(0, resultList.get(0).getLowerBound());
-		Assert.assertEquals(0, resultList.get(0).getUpperBound());
-		
-		reset();
-	}
-	
-	/**
-	 * This method is used to test the method for removing null and negative intervals from list for negative intervals, accepts nothing and returns nothing but throws NumberFormatException.
-	 */
-	@Test
-	public void removeNullAndNegativeIntervalsTestForNegativeIntervalThrowsNumberFormatException() {
-		list.add(new Interval(-1, 10));
-		
-		try {
-			resultList = mergeIntervals.getMergedIntervals(list);
-		} catch (Exception e) {
-			Assert.assertEquals(e.getClass(), NumberFormatException.class);
-			Assert.assertEquals("Zipcodes must be non-negative.", e.getMessage());
-			log.info(e.toString());
-		}
-		
-		reset();
-	}
-	
-	/**
-	 * This method is used to test the method for removing null and negative intervals from list for positive intervals, accepts nothing and returns nothing.
-	 */
-	@Test
-	public void removeNullAndNegativeIntervalsTestForPositiveInterval() {
-		list.add(new Interval(200, 10));
-		
-		resultList = mergeIntervals.getMergedIntervals(list);
-		
-		Assert.assertEquals(200, resultList.get(0).getLowerBound());
-		Assert.assertEquals(10, resultList.get(0).getUpperBound());
-		
-		reset();
-	}
-	
-	/**
-	 * This method is used to test the method for removing null and negative intervals from list for null intervals, accepts nothing and returns nothing but throws NullPointerException.
-	 */
-	@Test
-	public void removeNullAndNegativeIntervalsTestForNullIntervalThrowsNullPointerException() {
-		list.add(null);
-		
-		resultList = mergeIntervals.getMergedIntervals(list);
-		
-		try {
-			resultList = mergeIntervals.getMergedIntervals(list);
-		} catch (Exception e) {
-			Assert.assertEquals(e.getClass(), NullPointerException.class);
-			log.info(e.toString());
-		}
-		
-		reset();
-	}
+  resultList = mergeIntervals.getSortedIntervals(list);
 
-	/**
-	 * This method is the main method for running all the test cases in this class, accepts array of String and returns nothing.
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		Result result = JUnitCore.runClasses(MergeIntervals.class);
-		for (Failure failure : result.getFailures()) {
-			System.out.println(failure.toString());
-		}
-	}
+  Assert.assertEquals(0, resultList.get(0).getLowerBound());
+  Assert.assertEquals(0, resultList.get(0).getUpperBound());
+
+  reset();
+ }
+
+ /**
+  * This method is used to test the method for merged intervals list for positive
+  * and overlapping intervals, accepts nothing and returns nothing.
+  */
+ @Test
+ public void getMergedIntervalsTestForOverlappingIntervals() {
+  list.add(new Interval(500, 800));
+  list.add(new Interval(500, 750));
+
+  resultList = mergeIntervals.getMergedIntervals(list);
+
+  Assert.assertEquals(500, list.get(0).getLowerBound());
+  Assert.assertEquals(800, list.get(0).getUpperBound());
+
+  reset();
+ }
+
+ /**
+  * This method is used to test the method for merged intervals list for positive
+  * and non-overlapping intervals, accepts nothing and returns nothing.
+  */
+ @Test
+ public void getMergedIntervalsTestForNonOverlappingIntervals() {
+  list.add(new Interval(500, 800));
+  list.add(new Interval(200, 300));
+
+  resultList = mergeIntervals.getMergedIntervals(list);
+
+  Assert.assertEquals(500, list.get(0).getLowerBound());
+  Assert.assertEquals(800, list.get(0).getUpperBound());
+
+  Assert.assertEquals(200, list.get(1).getLowerBound());
+  Assert.assertEquals(300, list.get(1).getUpperBound());
+
+  reset();
+ }
+
+ /**
+  * This method is used to test the method for merged intervals list for null
+  * intervals, accepts nothing and returns nothing.
+  */
+ @Test
+ public void getMergedIntervalsTestForNullIntervals() {
+  list.add(null);
+
+  resultList = mergeIntervals.getMergedIntervals(list);
+
+  Assert.assertNull(resultList);
+
+  reset();
+ }
+
+ /**
+  * This method is used to test the method for merged intervals list for negative
+  * intervals, accepts nothing and returns nothing but throws
+  * NumberFormatException.
+  */
+ @Test
+ public void getMergedIntervalsTestForNegativeIntervalsThrowsNumberFormatException() {
+  list.add(new Interval(-500, 1000));
+
+  try {
+   resultList = mergeIntervals.getMergedIntervals(list);
+  } catch (Exception e) {
+   Assert.assertEquals(e.getClass(), NumberFormatException.class);
+   Assert.assertEquals("Zipcodes must be non-negative.", e.getMessage());
+   log.info(e.toString());
+  }
+
+  reset();
+ }
+
+ /**
+  * This method is used to test the method for merged intervals list for point
+  * intervals, accepts nothing and returns nothing.
+  */
+ @Test
+ public void getMergedIntervalsTestForPointInterval() {
+  list.add(new Interval(0, 0));
+
+  resultList = mergeIntervals.getMergedIntervals(list);
+
+  Assert.assertEquals(0, resultList.get(0).getLowerBound());
+  Assert.assertEquals(0, resultList.get(0).getUpperBound());
+
+  reset();
+ }
+
+ /**
+  * This method is used to test the method for removing null and negative
+  * intervals from list for point intervals, accepts nothing and returns nothing.
+  */
+ @Test
+ public void removeNullAndNegativeIntervalsTestForPointInterval() {
+  list.add(new Interval(0, 0));
+
+  resultList = mergeIntervals.getMergedIntervals(list);
+
+  Assert.assertEquals(0, resultList.get(0).getLowerBound());
+  Assert.assertEquals(0, resultList.get(0).getUpperBound());
+
+  reset();
+ }
+
+ /**
+  * This method is used to test the method for removing null and negative
+  * intervals from list for negative intervals, accepts nothing and returns
+  * nothing but throws NumberFormatException.
+  */
+ @Test
+ public void removeNullAndNegativeIntervalsTestForNegativeIntervalThrowsNumberFormatException() {
+  list.add(new Interval(-1, 10));
+
+  try {
+   resultList = mergeIntervals.getMergedIntervals(list);
+  } catch (Exception e) {
+   Assert.assertEquals(e.getClass(), NumberFormatException.class);
+   Assert.assertEquals("Zipcodes must be non-negative.", e.getMessage());
+   log.info(e.toString());
+  }
+
+  reset();
+ }
+
+ /**
+  * This method is used to test the method for removing null and negative
+  * intervals from list for positive intervals, accepts nothing and returns
+  * nothing.
+  */
+ @Test
+ public void removeNullAndNegativeIntervalsTestForPositiveInterval() {
+  list.add(new Interval(200, 10));
+
+  resultList = mergeIntervals.getMergedIntervals(list);
+
+  Assert.assertEquals(200, resultList.get(0).getLowerBound());
+  Assert.assertEquals(10, resultList.get(0).getUpperBound());
+
+  reset();
+ }
+
+ /**
+  * This method is used to test the method for removing null and negative
+  * intervals from list for null intervals, accepts nothing and returns nothing
+  * but throws NullPointerException.
+  */
+ @Test
+ public void removeNullAndNegativeIntervalsTestForNullIntervalThrowsNullPointerException() {
+  list.add(null);
+
+  resultList = mergeIntervals.getMergedIntervals(list);
+
+  try {
+   resultList = mergeIntervals.getMergedIntervals(list);
+  } catch (Exception e) {
+   Assert.assertEquals(e.getClass(), NullPointerException.class);
+   log.info(e.toString());
+  }
+
+  reset();
+ }
+
+ /**
+  * This method is used to test the method for positive, overlapping,
+  * non-overlapping, forward and backward intervals from the list of positive
+  * intervals, accepts nothing, returns nothing and does not throw any
+  * exceptions.
+  */
+ @Test
+ public void getSortedAndMergedIntervalsTestForPostiveOverlappingAndNonOverlappingForwardAndBackwardIntervals() {
+  List<Interval> list = new ArrayList<>();
+  MergeIntervals mergeIntervals = new MergeIntervals();
+
+  list.add(new Interval(49679, 52015));
+  list.add(new Interval(49800, 50000));
+  list.add(new Interval(51500, 53479));
+  list.add(new Interval(45012, 46937));
+  list.add(new Interval(54012, 59607));
+  list.add(new Interval(45500, 45590));
+  list.add(new Interval(45999, 47900));
+  list.add(new Interval(44000, 45000));
+  list.add(new Interval(43012, 45950));
+
+  resultList = mergeIntervals.getSortedAndMergedIntervals(list);
+
+  log.info(resultList.toString());
+  System.out.println(resultList.toString());
+
+  Assert.assertEquals(43012, resultList.get(0).getLowerBound());
+  Assert.assertEquals(47900, resultList.get(0).getUpperBound());
+
+  Assert.assertEquals(49679, resultList.get(1).getLowerBound());
+  Assert.assertEquals(53479, resultList.get(1).getUpperBound());
+
+  Assert.assertEquals(54012, resultList.get(2).getLowerBound());
+  Assert.assertEquals(59607, resultList.get(2).getUpperBound());
+
+  reset();
+ }
+
+ /**
+  * This method is used to test the method for point interval from the list of
+  * positive intervals, accepts nothing, returns nothing and does not throw any
+  * exceptions.
+  */
+ @Test
+ public void getSortedAndMergedIntervalsTestForPointIntervals() {
+  List<Interval> list = new ArrayList<>();
+  MergeIntervals mergeIntervals = new MergeIntervals();
+
+  list.add(new Interval(49679, 52015));
+
+  resultList = mergeIntervals.getSortedAndMergedIntervals(list);
+
+  log.info(resultList.toString());
+
+  Assert.assertEquals(49679, resultList.get(0).getLowerBound());
+  Assert.assertEquals(52015, resultList.get(0).getUpperBound());
+
+  reset();
+
+ }
+
+ /**
+  * This method is used to test the method for negative interval from the list of
+  * positive intervals, accepts nothing, returns nothing and throws
+  * NumberFormatException.
+  */
+ @Test
+ public void getSortedAndMergedIntervalsTestForNegativeIntervals() {
+  List<Interval> list = new ArrayList<>();
+  MergeIntervals mergeIntervals = new MergeIntervals();
+
+  list.add(new Interval(-49679, 52015));
+
+  try {
+   resultList = mergeIntervals.getSortedAndMergedIntervals(list);
+  } catch (Exception e) {
+   Assert.assertEquals(e.getClass(), NumberFormatException.class);
+   Assert.assertEquals("Zipcodes must be non-negative.", e.getMessage());
+   log.info(e.toString());
+  }
+
+  reset();
+
+ }
+
+ /**
+  * This method is used to test the method for null interval from the list of
+  * positive intervals, accepts nothing, returns nothing and throw
+  * NullPointerException.
+  */
+ @Test
+ public void getSortedAndMergedIntervalsTestForNullIntervals() {
+  List<Interval> list = new ArrayList<>();
+  MergeIntervals mergeIntervals = new MergeIntervals();
+
+  list.add(null);
+
+  try {
+   resultList = mergeIntervals.getSortedAndMergedIntervals(list);
+  } catch (Exception e) {
+   Assert.assertEquals(e.getClass(), NullPointerException.class);
+   log.info(e.toString());
+  }
+
+  reset();
+
+ }
+
+ /**
+  * This method is the main method for running all the test cases in this class,
+  * accepts array of String and returns nothing.
+  * 
+  * @param args
+  */
+ public static void main(String[] args) {
+  Result result = JUnitCore.runClasses(MergeIntervals.class);
+  for (Failure failure : result.getFailures()) {
+   System.out.println(failure.toString());
+  }
+ }
 }
